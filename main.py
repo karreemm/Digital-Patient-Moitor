@@ -49,9 +49,6 @@ class MainWindow(QMainWindow):
         self.read_spo2_data()
         self.read_resp_data()
 
-        # self.detection_thread = ArrhythmiaDetectionThread(self)
-        # self.detection_thread.detection_completed.connect(self.handle_arrhythmia_detection)
-        #
         self.arrhythmia_timer = QTimer(self)
         self.arrhythmia_timer.timeout.connect(self.trigger_arrhythmia_detection)
 
@@ -85,19 +82,6 @@ class MainWindow(QMainWindow):
         # Calculate start and end indices for the current window
         end_idx = graph.current_frame
         start_idx = 0
-
-        # if self.detection_thread and self.detection_thread.isRunning():
-        #     self.detection_thread.quit()  # Request thread to stop
-        #     self.detection_thread.wait()  # Wait for thread to actually stop
-        #
-        #     # Create a new thread
-        # self.detection_thread = DetectionThread(self, self.ecg, start_idx, end_idx, 360)
-        #
-        # # Connect the signal
-        # self.detection_thread.detection_completed.connect(self.on_detection_completed)
-        #
-        # # Start the new thread
-        # self.detection_thread.start()
 
         classification, irregular_beats, heart_rate = ArrhythmiaClassifier.detect_irregular_beats(
             self.ecg[start_idx:end_idx], 360

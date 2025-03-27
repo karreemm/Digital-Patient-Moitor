@@ -3,15 +3,11 @@ import neurokit2 as nk
 # from biosppy.signals import ecg
 from enum import Enum
 
-from PyQt5.QtCore import QThread, pyqtSignal
-
-
 class ArrhythmiaClass(Enum):
     A_FIB = 101
     TACHYCARDIA = 106
     BRADYCARDIA = 200
     NORMAL = 0
-
 
 class ArrhythmiaClassifier:
     @staticmethod
@@ -54,21 +50,4 @@ class ArrhythmiaClassifier:
 
         return ArrhythmiaClass.NORMAL, heart_rate
 
-
-# class DetectionThread(QThread):
-#     detection_completed = pyqtSignal(ArrhythmiaClass, list, dict)
-#
-#     def __init__(self, parent=None, signal=None, start_idx=0, end_idx=0, sampling_rate=360):
-#         super().__init__(parent)
-#
-#         print(f"start_idx: {start_idx}, end_idx: {end_idx}")
-#
-#         self.signal = signal[start_idx:end_idx].copy()
-#         self.sampling_rate = sampling_rate
-#
-#     def run(self):
-#         classification, irregular_beats, heart_rate = ArrhythmiaClassifier.detect_irregular_beats(
-#             self.signal, self.sampling_rate
-#         )
-#         self.detection_completed.emit(classification, irregular_beats, heart_rate)
 

@@ -102,9 +102,6 @@ class Graph:
                 # Stop the timer when data ends
                 self.timer.stop()
 
-
-
-
     def resume_sliding_window(self, event):
         """Detect if the user clicked to stop panning and reset sliding."""
         self.is_user_panning = False
@@ -114,8 +111,6 @@ class Graph:
                 self.signal_x[self.current_frame],
                 padding=0
             )
-
-   
 
     def clear_signal(self):
         """Clear the graph data."""
