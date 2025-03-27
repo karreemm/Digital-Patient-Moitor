@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QVBoxLayout
 
 
 class Graph:
-    def __init__(self, graphWidget, title = None, xlabel = None, ylabel = None, window_size=100, sampling_rate=40):
+    def __init__(self, graphWidget, title = None, xlabel = None, ylabel = None, window_size=100, sampling_rate=40, color='#1bf811'):
         """
         Args:
             graphWidget: The PyQtGraph plot widget.
@@ -18,6 +18,7 @@ class Graph:
         self.graphWidget = graphWidget
         self.window_size = window_size  # Number of samples for one second
         self.sampling_rate = sampling_rate
+        self.color = color
 
         # Ensure the parent widget has a layout
         if graphWidget.layout() is None:
@@ -83,7 +84,7 @@ class Graph:
                 self.signal_plot.setData(
                     self.signal_x[:self.current_frame],  # Show all data up to current frame
                     self.signal_y[:self.current_frame],
-                    pen=pg.mkPen('#1bf811', width=2)
+                    pen=pg.mkPen(self.color, width=2)
                 )
 
                 # Set the sliding window for the current visible range

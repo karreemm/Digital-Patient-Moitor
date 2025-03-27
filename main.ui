@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1126</width>
-    <height>886</height>
+    <height>911</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -126,6 +126,18 @@ color: #1bf811</string>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_10">
         <item>
+         <widget class="QLabel" name="label_3">
+          <property name="styleSheet">
+           <string notr="true">font-weight:bold;
+font-size: 16px;
+color: #fd0900</string>
+          </property>
+          <property name="text">
+           <string>SPO2</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QFrame" name="spo2Frame">
           <property name="minimumSize">
            <size>
@@ -134,8 +146,7 @@ color: #1bf811</string>
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: #14213d;
-border-radius: 10px;</string>
+           <string notr="true">border-radius: 10px;</string>
           </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -143,7 +154,11 @@ border-radius: 10px;</string>
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QGridLayout" name="gridLayout_3"/>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="1" column="0">
+            <layout class="QVBoxLayout" name="spo2Layout"/>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -164,6 +179,18 @@ border-radius: 10px;</string>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <item>
+         <widget class="QLabel" name="label_25">
+          <property name="styleSheet">
+           <string notr="true">font-weight:bold;
+font-size: 16px;
+color: #fbf906</string>
+          </property>
+          <property name="text">
+           <string>RESP</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QFrame" name="respFrame">
           <property name="minimumSize">
            <size>
@@ -172,8 +199,7 @@ border-radius: 10px;</string>
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: #14213d;
-border-radius: 10px;</string>
+           <string notr="true">border-radius: 10px;</string>
           </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -181,7 +207,11 @@ border-radius: 10px;</string>
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QGridLayout" name="gridLayout_4"/>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="1" column="0">
+            <layout class="QVBoxLayout" name="respLayout"/>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>

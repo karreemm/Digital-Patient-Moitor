@@ -7,47 +7,62 @@ from PyQt5.QtGui import QIcon
 import pyqtgraph as pg
 import numpy as np
 import pandas as pd
-
 from ArrhythmiaClassifier import ArrhythmiaClass
 from helper_functions.compile_qrc import compile_qrc
 compile_qrc()
 from icons_setup.icons import *
 from Graph import Graph
-
 from icons_setup.compiledIcons import *
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
+    
         super(MainWindow, self).__init__()
         loadUi('main.ui', self)
         self.setWindowIcon(QIcon('icons_setup\icons\logo.png'))
 
-        # data = pd.read_csv("file.csv")
-
         self.ecgLayout = self.findChild(QVBoxLayout, "ecgLayout")
+        self.spo2Layout = self.findChild(QVBoxLayout, "spo2Layout")
+        self.respLayout = self.findChild(QVBoxLayout, "respLayout")
         self.ecgClassification = self.findChild(QLabel, "ecgClassification")
         self.heartBeatsValue = self.findChild(QLabel, "ecgValue")
         self.ecgStatus = self.findChild(QLabel, "ecgStatus")
 
-        # self.detection_thread = ArrhythmiaDetectionThread(self)
-        # self.detection_thread.detection_completed.connect(self.handle_arrhythmia_detection)
-        #
-        # self.arrhythmia_timer = QTimer(self)
-        # self.arrhythmia_timer.timeout.connect(self.trigger_arrhythmia_detection)
+        self.ecgGraphWidget = pg.PlotWidget(self)
+        self.ecgLayout.addWidget(self.ecgGraphWidget)
+        self.ecgGraph = Graph(self.ecgGraphWidget, sampling_rate=360, window_size=1500)
+        self.setWindowTitle('ECG')
 
-        self.graphWidget = pg.PlotWidget(self)
-        self.ecgLayout.addWidget(self.graphWidget)
-        self.graph = Graph(self.graphWidget, sampling_rate=360, window_size=1500)
-        self.setWindowTitle('Patient Monitor')
+        self.spo2GraphWidget = pg.PlotWidget(self)
+        self.spo2Layout.addWidget(self.spo2GraphWidget)
+        self.spo2Graph = Graph(self.spo2GraphWidget, sampling_rate=360, window_size=1500, color='#fd0900')
+        self.setWindowTitle('SPO2')
 
-        # self.test_data()
-
+        self.respGraphWidget = pg.PlotWidget(self)
+        self.respLayout.addWidget(self.respGraphWidget)
+        self.respGraph = Graph(self.respGraphWidget, sampling_rate=360, window_size=1500, color='#fbf906')
+        self.setWindowTitle('Respiration')
+        
+        self.timer_connections = []
         self.read_data()
+        self.read_spo2_data()
+        self.read_resp_data()
 
         window_size = 1500  # 2 seconds at 360 Hz
         detection_interval = (window_size * 1000) // 360  # Convert to milliseconds
         # self.arrhythmia_timer.start(detection_interval)
+
+    def read_resp_data(self):
+        df = pd.read_csv("SPO2 & RESP/resp_signal_refined.csv")
+        time = df["Time (s)"].values
+        resp_values = df["RESP (breaths/min)"].values
+        self.respGraph.set_signal(time, resp_values)
+
+    def read_spo2_data(self):
+        df = pd.read_csv("SPO2 & RESP/spo2_signal_refined.csv")
+        time = df["Time (s)"].values
+        spo2_values = df["SpO2 (%)"].values
+        self.spo2Graph.set_signal(time, spo2_values)
 
     def read_data(self):
         df = pd.read_csv("ECGs/Atrial Fibrillation.csv")
@@ -55,15 +70,10 @@ class MainWindow(QMainWindow):
         time = (df["Time (ms)"] / 1000).values
         self.ecg = amplitude
         self.sampling_rate = 360
-        self.graph.set_signal(time, amplitude)
-
-    def test_data(self):
-        time = np.linspace(0, 10, 400)
-        amplitude = np.sin(2 * np.pi * 1 * time)
-        self.graph.set_signal(time, amplitude)
+        self.ecgGraph.set_signal(time, amplitude)
 
     def trigger_arrhythmia_detection(self):
-        graph = self.graph
+        graph = self.ecgGraph
 
         # Ensure we have enough data
         if len(graph.signal_x) < graph.window_size:
@@ -106,8 +116,8 @@ class MainWindow(QMainWindow):
         # If there are irregular beats, highlight them
         if irregular_beats:
             # Convert relative indices to x-coordinates
-            x_coords = [self.graph.signal_x[beat] for beat in irregular_beats]
-            y_coords = [self.graph.signal_y[beat] for beat in irregular_beats]
+            x_coords = [self.ecgGraph.signal_x[beat] for beat in irregular_beats]
+            y_coords = [self.ecgGraph.signal_y[beat] for beat in irregular_beats]
 
             # self.graph.irregular_beats_plot.setData(x_coords, y_coords)
 
