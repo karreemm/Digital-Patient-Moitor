@@ -56,13 +56,13 @@ class Graph:
         # Connect panning detection
         self.graphWidget.scene().sigMouseClicked.connect(self.resume_sliding_window)
 
-        # self.irregular_beats_plot = self.graphWidget.plot(
-        #     pen=None,
-        #     symbolBrush=(255, 0, 0),  # Red color for irregular beats
-        #     symbolPen='r',
-        #     symbol='o',
-        #     symbolSize=10
-        # )
+        self.irregular_beats_plot = self.graphWidget.plot(
+            pen=None,
+            symbolBrush=(255, 0, 0),  # Red color for irregular beats
+            symbolPen='r',
+            symbol='o',
+            symbolSize=10
+        )
 
     def set_speed(self, interval):
         self.timer.setInterval(int(interval))  # Ensure the interval is an integer
