@@ -1,2 +1,6 @@
 .idea/
 .DS_Store/
+test.py
+__pycache__/
+helper_functions/__pycache__
+icons_setup/__pycache__
