@@ -7,7 +7,8 @@ from PyQt5.QtGui import QIcon
 import pyqtgraph as pg
 import numpy as np
 import pandas as pd
-from ArrhythmiaClassifier import ArrhythmiaClass
+
+from ArrhythmiaClassifier import ArrhythmiaClass, ArrhythmiaClassifier
 from helper_functions.compile_qrc import compile_qrc
 compile_qrc()
 from icons_setup.icons import *
@@ -20,6 +21,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         loadUi('main.ui', self)
         self.setWindowIcon(QIcon('icons_setup\icons\logo.png'))
+
+        # data = pd.read_csv("file.csv")
 
         self.ecgLayout = self.findChild(QVBoxLayout, "ecgLayout")
         self.spo2Layout = self.findChild(QVBoxLayout, "spo2Layout")
@@ -48,9 +51,18 @@ class MainWindow(QMainWindow):
         self.read_spo2_data()
         self.read_resp_data()
 
-        window_size = 1500  # 2 seconds at 360 Hz
+        # self.detection_thread = ArrhythmiaDetectionThread(self)
+        # self.detection_thread.detection_completed.connect(self.handle_arrhythmia_detection)
+        #
+        self.arrhythmia_timer = QTimer(self)
+        self.arrhythmia_timer.timeout.connect(self.trigger_arrhythmia_detection)
+
+
+
+
+        window_size = 1700
         detection_interval = (window_size * 1000) // 360  # Convert to milliseconds
-        # self.arrhythmia_timer.start(detection_interval)
+        self.arrhythmia_timer.start(detection_interval)
 
     def read_resp_data(self):
         df = pd.read_csv("SPO2 & RESP/resp_signal_refined.csv")
@@ -75,31 +87,34 @@ class MainWindow(QMainWindow):
     def trigger_arrhythmia_detection(self):
         graph = self.ecgGraph
 
-        # Ensure we have enough data
-        if len(graph.signal_x) < graph.window_size:
-            return
-
         # Calculate start and end indices for the current window
         end_idx = graph.current_frame
         start_idx = max(0, end_idx - graph.window_size)
 
-        # Set parameters and start the thread
-        self.detection_thread.set_parameters(
-            graph.signal_y,
-            start_idx,
-            end_idx,
-            sampling_rate=graph.sampling_rate
+        # if self.detection_thread and self.detection_thread.isRunning():
+        #     self.detection_thread.quit()  # Request thread to stop
+        #     self.detection_thread.wait()  # Wait for thread to actually stop
+        #
+        #     # Create a new thread
+        # self.detection_thread = DetectionThread(self, self.ecg, start_idx, end_idx, 360)
+        #
+        # # Connect the signal
+        # self.detection_thread.detection_completed.connect(self.on_detection_completed)
+        #
+        # # Start the new thread
+        # self.detection_thread.start()
+
+        classification, irregular_beats, heart_rate = ArrhythmiaClassifier.detect_irregular_beats(
+            self.ecg[start_idx:end_idx], 360
         )
+        self.on_detection_completed(classification, irregular_beats, heart_rate)
 
-        # Start the thread if not already running
-        if not self.detection_thread.isRunning():
-            self.detection_thread.start()
-
-    def handle_arrhythmia_detection(self, classification, irregular_beats, ecg_info):
+    def on_detection_completed(self, classification, irregular_beats, heart_rate):
         """
         Handle the results of arrhythmia detection
         """
         # Update UI with classification
+        print(f"Classification: {classification}, heart rate: {heart_rate}")
         if classification == ArrhythmiaClass.A_FIB:
             self.ecgClassification.setText("Atrial Fibrillation")
             self.ecgStatus.setStyleSheet("color: red;")
@@ -113,13 +128,15 @@ class MainWindow(QMainWindow):
             self.ecgClassification.setText("Normal")
             self.ecgStatus.setStyleSheet("color: green;")
 
+        self.heartBeatsValue.setText(str(round(heart_rate)))
+
         # If there are irregular beats, highlight them
         if irregular_beats:
             # Convert relative indices to x-coordinates
             x_coords = [self.ecgGraph.signal_x[beat] for beat in irregular_beats]
             y_coords = [self.ecgGraph.signal_y[beat] for beat in irregular_beats]
 
-            # self.graph.irregular_beats_plot.setData(x_coords, y_coords)
+            self.graph.irregular_beats_plot.setData(x_coords, y_coords)
 
 
 if __name__ == '__main__':
