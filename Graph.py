@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QVBoxLayout
 
 
 class Graph:
-    def __init__(self, graphWidget, title, xlabel, ylabel, window_size=100, sampling_rate=40):
+    def __init__(self, graphWidget, title = None, xlabel = None, ylabel = None, window_size=100, sampling_rate=40):
         """
         Args:
             graphWidget: The PyQtGraph plot widget.
@@ -28,21 +28,16 @@ class Graph:
         layout.addWidget(self.graphWidget)
 
         # Set background and grid
-        self.graphWidget.setBackground('#e6eaf1')
-        self.graphWidget.setStyleSheet(""" background-color: #e6eaf1;
-                                           border-radius: 15px; 
-                                           border: 2px solid #ffffff;
-                                           box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);""")
+        self.graphWidget.setBackground('Transparent')
+        self.graphWidget.setStyleSheet(""" background-color: Transparent;""")
 
         # Configure plot labels and axis colors
-        self.graphWidget.getAxis('left').setPen(pg.mkPen(color='#2e556d', width=2))
-        self.graphWidget.getAxis('bottom').setPen(pg.mkPen(color='#2e556d', width=2))
-        self.graphWidget.getAxis('left').setTextPen(pg.mkPen(color='#2e556d'))
-        self.graphWidget.getAxis('bottom').setTextPen(pg.mkPen(color='#2e556d'))
+        self.graphWidget.getAxis('left').hide()  # Hide y-axis
+        self.graphWidget.getAxis('bottom').hide()  # Hide x-axis
 
         # Label axes
-        self.graphWidget.setLabel('left', ylabel, **{'color': '#2e556d', 'font-size': '10pt'})
-        self.graphWidget.setLabel('bottom', xlabel, **{'color': '#2e556d', 'font-size': '10pt'})
+        # self.graphWidget.setLabel('left', ylabel, **{'color': '#2e556d', 'font-size': '10pt'})
+        # self.graphWidget.setLabel('bottom', xlabel, **{'color': '#2e556d', 'font-size': '10pt'})
 
         self.signal_plot = self.graphWidget.plot()
 
@@ -80,7 +75,7 @@ class Graph:
                 self.signal_plot.setData(
                     self.signal_x[:self.current_frame],  # Show all data up to current frame
                     self.signal_y[:self.current_frame],
-                    pen=pg.mkPen('#3286ad', width=2)
+                    pen=pg.mkPen('#1bf811', width=2)
                 )
 
                 # Set the sliding window for the current visible range
@@ -99,7 +94,7 @@ class Graph:
                 self.timer.stop()
 
 
-   
+
 
     def resume_sliding_window(self, event):
         """Detect if the user clicked to stop panning and reset sliding."""
