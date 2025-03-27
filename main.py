@@ -22,8 +22,6 @@ class MainWindow(QMainWindow):
         loadUi('main.ui', self)
         self.setWindowIcon(QIcon('icons_setup\icons\logo.png'))
 
-        # data = pd.read_csv("file.csv")
-
         self.ecgLayout = self.findChild(QVBoxLayout, "ecgLayout")
         self.spo2Layout = self.findChild(QVBoxLayout, "spo2Layout")
         self.respLayout = self.findChild(QVBoxLayout, "respLayout")
@@ -57,9 +55,6 @@ class MainWindow(QMainWindow):
         self.arrhythmia_timer = QTimer(self)
         self.arrhythmia_timer.timeout.connect(self.trigger_arrhythmia_detection)
 
-
-
-
         window_size = 1700
         detection_interval = (window_size * 1000) // 360  # Convert to milliseconds
         self.arrhythmia_timer.start(detection_interval)
@@ -89,7 +84,7 @@ class MainWindow(QMainWindow):
 
         # Calculate start and end indices for the current window
         end_idx = graph.current_frame
-        start_idx = max(0, end_idx - graph.window_size)
+        start_idx = 0
 
         # if self.detection_thread and self.detection_thread.isRunning():
         #     self.detection_thread.quit()  # Request thread to stop
@@ -117,26 +112,22 @@ class MainWindow(QMainWindow):
         print(f"Classification: {classification}, heart rate: {heart_rate}")
         if classification == ArrhythmiaClass.A_FIB:
             self.ecgClassification.setText("Atrial Fibrillation")
-            self.ecgStatus.setStyleSheet("color: red;")
+            self.ecgStatus.setText("Irrregular")
+            # self.ecgStatus.setStyleSheet("color: red;")
         elif classification == ArrhythmiaClass.TACHYCARDIA:
             self.ecgClassification.setText("Tachycardia")
-            self.ecgStatus.setStyleSheet("color: orange;")
+            self.ecgStatus.setText("Irregular")
+            # self.ecgStatus.setStyleSheet("color: orange;")
         elif classification == ArrhythmiaClass.BRADYCARDIA:
             self.ecgClassification.setText("Bradycardia")
-            self.ecgStatus.setStyleSheet("color: orange;")
+            self.ecgStatus.setText("Irregular")
+            # self.ecgStatus.setStyleSheet("color: orange;")
         else:
             self.ecgClassification.setText("Normal")
-            self.ecgStatus.setStyleSheet("color: green;")
+            self.ecgStatus.setText("Within normal range")
+            # self.ecgStatus.setStyleSheet("color: green;")
 
         self.heartBeatsValue.setText(str(round(heart_rate)))
-
-        # If there are irregular beats, highlight them
-        if irregular_beats:
-            # Convert relative indices to x-coordinates
-            x_coords = [self.ecgGraph.signal_x[beat] for beat in irregular_beats]
-            y_coords = [self.ecgGraph.signal_y[beat] for beat in irregular_beats]
-
-            self.graph.irregular_beats_plot.setData(x_coords, y_coords)
 
 
 if __name__ == '__main__':

@@ -45,9 +45,9 @@ class ArrhythmiaClassifier:
         heart_rates = 60 / rr_intervals
         heart_rate = np.mean(heart_rates)
 
-        if np.mean(heart_rate) < 50:
+        if np.mean(heart_rate) < 60:
             return ArrhythmiaClass.BRADYCARDIA, heart_rate
-        if np.mean(heart_rate) > 120:
+        if np.mean(heart_rate) > 90:
             return ArrhythmiaClass.TACHYCARDIA, heart_rate
         if len(afib_beats) > 0:
             return ArrhythmiaClass.A_FIB, afib_beats, heart_rate
